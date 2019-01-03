@@ -1,0 +1,25 @@
+{
+  "name": "eos_exchange",
+  "version": "0.0.1",
+  "description": "eos infrastructure for managing send/receive for crypto custodial services",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Laziemo/eos_exchange.git"
+  },
+  "keywords": [
+    "eos",
+    "exchange",
+    "send",
+    "receive"
+  ],
+  "author": "Lm0",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Laziemo/eos_exchange/issues"
+  },
+  "homepage": "https://github.com/Laziemo/eos_exchange#readme"
+}
