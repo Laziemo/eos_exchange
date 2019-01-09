@@ -36,7 +36,7 @@ Requires call to:
 
 /push_transaction(s)
 
-##monitor.js
+## monitor.js
 
 Cron tab makes get_actions rpc calls every 5 seconds and calles update.js with a set of new receives.
 
