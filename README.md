@@ -4,7 +4,7 @@
 
 Uses eosjs to sign transactions.
 
-//Can be extended to deprecate interface.js using JSONRpc class
+* Currently facing bugs. Can be extended to deprecate interface.js using JSONRpc class
 
 ## interface.js
 
