@@ -1,5 +1,5 @@
 /*
-Receives model for EOS
+EOS Excahnge Services::Receives Schema
 
 Developed at ThroughBit Technologies Pvt.Ltd
 HYFERx Project

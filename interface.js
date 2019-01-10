@@ -1,5 +1,5 @@
 /*
-EOS Exchange Services
+EOS Exchange Services::Interface
 Developed at ThroughBit Technologies Pvt. Ltd.
 HYFERx Project
 */
@@ -13,6 +13,7 @@ const bodyParser = require('body-parser');
 
 const req_options = require('./lib/options');
 const node_request = require('./lib/node_request');
+const eos = require('./lib/eosfx');
 //-<.init.>===========================================================~|
 const NI_PORT = 8877;
 
@@ -28,6 +29,26 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.post('/', (req,res)=>{
     res.send("Hello");
 });
+//-<.TRANSFER.>=======================================================~|
+app.post('/send',(req,res)=>{
+    try{
+        const data = req.body;
+        console.log(data);
+
+        eos.transfer(data)
+        .then((txid)=>{
+            console.log(txid);
+            res.send(txid);
+        })
+        .catch((e)=>{
+            console.log(e);
+            res.send(e);
+        });
+    }
+    catch(e){
+      res.send(e);
+    }
+  });
 //-<.GET_INFO.>=======================================================~|
 app.post('/get_info',(req,res)=>{
     try{
@@ -36,53 +57,47 @@ app.post('/get_info',(req,res)=>{
         .then((options)=>{
             node_request.req(options,"/get_info")
             .then((resp)=>{
-                const current_block = resp.head_block_num;
-                const target_block = 5338808;
-
-                const blocks_left = target_block - current_block;
-                const block_p_min = (100) * 60;
-                const ETpB = blocks_left / block_p_min ;
-                res.send(`${blocks_left} blocks left to target...\nETA:${ETpB} minutes\n`);
+                res.send(`${JSON.stringify(resp,null,2)}`);
             })
             .catch((e)=>{
-                res.send(e);
+                res.send(`${JSON.stringify(e,null,2)}`);
             });
         })
         .catch((e)=>{
-            res.send(e);
+            res.send(`${JSON.stringify(e,null,2)}`);
         });
     }
     catch(e){
-      res.send(e);
-    }
+        res.send(`${JSON.stringify(e,null,2)}`);    }
   });
 //-<.GET_ACCOUNT.>====================================================~|
 app.post('/get_account',(req,res)=>{
     try{
-        const params = {"account_name":"stestnettbit"};
+        const params = req.body;
         req_options.build('node',params,"chain","get_account")
         .then((options)=>{
             node_request.req(options,"/get_account")
             .then((resp)=>{
-                res.send(resp);
-            })
+                res.send(`${JSON.stringify(resp,null,2)}`);            })
             .catch((e)=>{
-                res.send(e);
+                res.send(`${JSON.stringify(e,null,2)}`);
+
             });
         })
         .catch((e)=>{
-            res.send(e);
+            res.send(`${JSON.stringify(e,null,2)}`);
+
         });
     }
     catch(e){
-      res.send(e);
+        res.send(`${JSON.stringify(e,null,2)}`);
     }
   });
 //-<.GET_ACTIONS.>====================================================~|
 app.post('/get_actions',(req,res)=>{
     try{
         //const params = {"offset":1,"account_name":"stestnettbit","pos":1};
-        const params = {"account_name":"stestnettbit"};
+        const params = req.body;
         req_options.build('node',params,"history","get_actions")
         .then((options)=>{
             node_request.req(options,"/get_actions")
@@ -108,42 +123,42 @@ app.post('/get_actions',(req,res)=>{
             })
             .catch((e)=>{
                 console.log(e)
-                res.send(e);
+                res.send(`${JSON.stringify(e,null,2)}`);
             });
         })
         .catch((e)=>{
-            res.send(e);
+            res.send(`${JSON.stringify(e,null,2)}`);
+
         });
     }
     catch(e){
-      res.send(e);
+        res.send(`${JSON.stringify(e,null,2)}`);
     }
   });
-  //-<.GET_TRANSACTIONS.>====================================================~|
+//-<.GET_TRANSACTIONS.>====================================================~|
 app.post('/get_transaction',(req,res)=>{
     try{
-        const txid = req.body.txid;
-        const bnh = req.body.bnh;
-        console.log(txid);
-        const params = {"id":txid, "block_num_hint":bnh};
+        const params = req.body;
+        console.log(params);
         req_options.build('node',params,"history","get_transaction")
         .then((options)=>{
             node_request.req(options,"/get_transaction")
             .then((resp)=>{
-                res.send(resp);
+                res.send(JSON.stringify(resp,null,2));
             })
             .catch((e)=>{
-                res.send(e);
+                res.send(`${JSON.stringify(e,null,2)}`);
             });
         })
         .catch((e)=>{
-            res.send(e);
+            res.send(`${JSON.stringify(e,null,2)}`);
         });
     }
     catch(e){
-      res.send(e);
+        res.send(`${JSON.stringify(e,null,2)}`);
     }
   });
+
 //-<.listen.>=========================================================~|
 app.listen(NI_PORT,()=>{
   console.log(`EOS Node Infterface running on port ${NI_PORT}`);

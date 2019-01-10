@@ -1,6 +1,6 @@
 
 /*
-EOS Exchange Services::Receive Monitor
+EOS Exchange Services::Receive Update
 Developed at ThroughBit Technologies Pvt. Ltd.
 HYFERx Project
 */
@@ -84,6 +84,7 @@ app.post('/update', (req,res)=>{
         ()=>{
             console.log("Fully updated db!");
             //notify your friends
+            res.send("GOT");
         });
     }
    

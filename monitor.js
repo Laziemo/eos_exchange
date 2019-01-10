@@ -17,8 +17,6 @@ const node_request = require('./lib/node_request');
 const looper = require('./lib/async_loop');
 
 let app = express();
-const L_PORT=process.env.L_PORT;
-console.log(L_PORT);
 app.use(helmet());
 app.use(helmet.noCache());
 app.use(bodyParser.json())
@@ -36,7 +34,7 @@ fs.readFile('tip_backup.bloc',(err, data)=>{
 const job = new CronDog('*/5 * * * * *', ()=>{
     //get actions for stestnettbit
     try{
-        const params = {};
+        const params = {"account_name":"stestnettbit"};
         req_options.build('http://127.0.0.1:8877/get_actions',params)
         .then((options)=>{
             node_request.req(options,"/interface/get_actions")
@@ -59,14 +57,18 @@ const job = new CronDog('*/5 * * * * *', ()=>{
                     console.log(our_blocks);
                     our_blocks.sort();
                     if (tip_block<our_blocks[our_blocks.length -1]){ // update is required
-                        tip_block = our_blocks[our_blocks.length -1];
+                        
 
-                        fs.writeFile('tip_backup.bloc', tip_block, (err) => {
-                            if (err) throw err;
-                            console.log('Updated tip_block for receives to tip_backup.bloc');
-                        });
-
-                        update_db(our_trxset);
+                        update_db(our_trxset).then((resp)=>{
+                            tip_block = our_blocks[our_blocks.length -1];
+                            fs.writeFile('tip_backup.bloc', tip_block, (err) => {
+                                if (err) throw err;
+                                console.log('Updated tip_block for receives to tip_backup.bloc');
+                            });
+                        })
+                        .catch((e)=>{
+                            console.log("Not updating tip_block. Rerun that crondog!");
+                        })
                     }
                         
                 });
@@ -92,23 +94,34 @@ const job = new CronDog('*/5 * * * * *', ()=>{
 job.start();
 //-<.f(x).>===========================================================~|
 let update_db=(data)=>{
-    try{
-        req_options.build('http://127.0.0.1:8866/update',data)
-        .then((options)=>{
-            node_request.req(options,"/update/receivesDB")
-            .then((resp)=>{
-                console.log(resp);
+    return new Promise((resolve,reject)=>{
+        try{
+            req_options.build('http://127.0.0.1:8866/update',data)
+            .then((options)=>{
+                node_request.req(options,"/update/receivesDB")
+                .then((resp)=>{
+                    //console.log(resp);
+                    if(resp==="GOT"){
+                        resolve();
+                    }
+                    else{
+                        reject("DB Error");
+                    }
+                })
+                .catch((e)=>{
+                    console.log("Caught Inside o)");
+                    reject("Error in making request to /update");
+                });
             })
             .catch((e)=>{
-                console.log("Caught Inside o)");
+                console.log("Caught Inside o))");
+                reject("Error in building options for call to /update");
             });
-        })
-        .catch((e)=>{
-            console.log("Caught Inside o))");
-        });
-    }
-    catch(e){
-        console.log("Caught Outside o)))");
-    }
+        }
+        catch(e){
+            console.log("Caught Outside o)))");
+            reject("General error from /update", e);
+        }
+    });
 }
 //-<.fin.>============================================================~|
