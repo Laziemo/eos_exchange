@@ -1,7 +1,5 @@
 # async_loop.js
 
-## Overview
-
 async_loop.js uses a reference counting algorithm to deal with looping in an asynchronous environment.
 
 In several cases time-consuming processing on data is required before passing control flow, for example db read-write, formatting responses etc. In such cases async_loop can be used to iterate over an array of data, process each element and report() upon completion of work on a single element. report() counts down a tracker which is set by the length of the array (reference count). Once this tracker counts down to 0,  all elements are completely processed and control flows into the callback function where program flow can continue.
