@@ -1,6 +1,6 @@
-# interface_request.js
+# node_request.js
 
-interface_request.js is a template for requests made to the EOS node.
+node_request.js is a template for requests made to the EOS node.
 
 It takes two parameters:
 

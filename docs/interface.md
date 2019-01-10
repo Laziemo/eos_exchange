@@ -51,5 +51,5 @@ curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1
 
 *Environment Variables*
 
-export NODE=*<port defined in config.ini::http-server-address>*
+export NODE=*port defined in config.ini::http-server-address*
 
