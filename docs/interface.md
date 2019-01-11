@@ -7,13 +7,20 @@ interface.js defines endpoints that make specific RPC calls to an EOS node.
 ### /send
 
 Request Format:
+
 ```
-curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/send" --data '{"from":"stestnettbit","to":"ptestnettbit","quantity":"1.0000 EOS","memo":"vizordskizzord"}'
+curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/send" --data '{"order_id":"TBIT123R098SJ",from":"stestnettbit","to":"ptestnettbit","quantity":"1.0000 EOS","memo":"vizordskizzord"}'
 ```
+
+Checks if order_id exists in db. 
+If so => return txid
+If not => update db then return txid
+
 
 ### /get_info
 
 Request Format:
+
 ```
 curl --request POST "http://127.0.0.1:8877/get_info" 
 ```
@@ -21,6 +28,7 @@ curl --request POST "http://127.0.0.1:8877/get_info"
 ### /get_account
 
 Request Format:
+
 ```
 curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/get_account" --data '{"account_name":"stestnettbit"}'
 ``` 
@@ -28,6 +36,7 @@ curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1
 ### /get_actions
 
 Request Format:
+
 ```
 curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/get_actions" --data '{"offset":1,"account_name":"stestnettbit","pos":1}'
 ``` 
@@ -42,6 +51,7 @@ To get the latest action set:
 ### /get_transaction
 
 Request Format:
+
 ```
 curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/get_transaction" --data '{"id":"2bd51183bbb9f4a48a8b5f13aa0b7d874a4cb8e86f2b536c0a1cac2e2ec2a482", "block_num_hint":8000855}'
 ``` 

@@ -46,21 +46,21 @@ const job = new CronDog('*/5 * * * * *', ()=>{
                 //try a filter() alternative to this looper...
                 looper.go(resp,(elem,report)=>{//elem is the iterator over resp, report is the reference counting function, call it at the end of the loop
                    
-                    if(elem.data.to==="stestnettbit" && tip_block<elem.block_num){
-                        our_trxset.push(elem);
-                        our_blocks.push(elem.block_num);
+                    if(elem.data.to==="stestnettbit" && tip_block<elem.block_num){ //if the selceted action (elem) has a block_num less that tip_block
+                        our_trxset.push(elem); //add the action to the trx_set of receives 
+                        our_blocks.push(elem.block_num); //add the block_num to update tip_block
                     }
-                    report();
+                    report(); //reference counter: go check the next trx (elem)
                 },
 
-                ()=>{ //callback
-                    console.log(our_blocks);
-                    our_blocks.sort();
-                    if (tip_block<our_blocks[our_blocks.length -1]){ // update is required
-                        
-
-                        update_db(our_trxset).then((resp)=>{
-                            tip_block = our_blocks[our_blocks.length -1];
+                ()=>{ //callback, all trx's iterated through...
+                    // console.log(our_blocks);
+                    our_blocks.sort(); //ensure that the last element of the array is the latest block
+                    if (tip_block<our_blocks[our_blocks.length -1]){ // if current tip_block is less than the latest block
+                        //new transactions have taken place since tip_block i.e. our_trxset has elements
+                        update_db(our_trxset).then((resp)=>{ //update mongodb client with new receives
+                            //if db update is successful then update tip_block
+                            tip_block = our_blocks[our_blocks.length -1];  
                             fs.writeFile('tip_backup.bloc', tip_block, (err) => {
                                 if (err) throw err;
                                 console.log('Updated tip_block for receives to tip_backup.bloc');
@@ -124,4 +124,6 @@ let update_db=(data)=>{
         }
     });
 }
+//-<.console.>========================================================~|
+console.log("Monitoring receives for EOS account: stestnettbit");
 //-<.fin.>============================================================~|

@@ -1,11 +1,5 @@
 # eos_exchange
 
-## index.js
-
-Uses eosjs to sign transactions.
-
-* Currently facing bugs. Can be extended to deprecate interface.js using JSONRpc class
-
 ## interface.js
 
 Makes API calls to an EOS node for the following methods:
@@ -15,6 +9,10 @@ Makes API calls to an EOS node for the following methods:
 **/get_account {"account_name":"stestnettbit"}**
 
 **/get_actions {"pos":-1,  "offset":1, "account_name":"stestnettbit"}**
+
+Uses eosjs to sign transactions and send via:
+
+**/send {"orderId":"TBIT123R098SJ",from":"stestnettbit","to":"ptestnettbit","quantity":"1.0000 EOS","memo":"vizordskizzord"}**
 
 ## CURL TESTS:
 
@@ -28,7 +26,7 @@ To Interface:
 curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/get_account" --data '{"account_name: "stestnettbit"}'
 ```
 ```
-curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/send" --data '{"from":"stestnettbit","to":"ptestnettbit","quantity":"1.0000 EOS","memo":"vizordskizzord"}'
+curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/send" --data '{"orderId":"TBIT123R098SJ","from":"stestnettbit","to":"ptestnettbit","quantity":"1.0000 EOS","memo":"vizordskizzord"}'
 ```
 
 ## monitor.js
@@ -41,11 +39,7 @@ Listens for requests from monitor.js to update a local mongodb.
 
 ### REQUIRED UPGRADES:
 
-Use ampq messaging queue for more dynamic updates to client. 
-
-Use db to only store receives that have been validated by the client as updated.
-
-Store latest block_num (tip_block) accordingly.
+- Formalize responses
 
 
 ### NOTES:

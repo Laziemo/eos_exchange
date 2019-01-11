@@ -14,6 +14,10 @@ const bodyParser = require('body-parser');
 const req_options = require('./lib/options');
 const node_request = require('./lib/node_request');
 const eos = require('./lib/eosfx');
+const sends_db = require('./lib/sends_db');
+
+
+
 //-<.init.>===========================================================~|
 const NI_PORT = 8877;
 
@@ -32,21 +36,55 @@ app.post('/', (req,res)=>{
 //-<.TRANSFER.>=======================================================~|
 app.post('/send',(req,res)=>{
     try{
+        let trx_id = "";
         const data = req.body;
         console.log(data);
+        //consider receiving send requests as a set
+        //deconstruct data at eosfx with a looper
+        sends_db.check(data.order_id)
+        .then((resp)=>{
+            if(resp.message==="NEED"){
+                eos.transfer(data)
+                .then((txid)=>{
+                    trx_id = txid;
+                    console.log(trx_id);
+                
+                    sends_db.update(data)
+                    .then((resp)=>{
+                        console.log(resp);
+                        res.send(trx_id);
+                    })
+                    .catch((e)=>{
+                        console.log(`Error: ${e}`);
+                        res.send(e);
+                    });
+                })
+                .catch((e)=>{
+                    console.log("Transaction Failed!");
+                    //do something
+                    const structure = {
+                        "transaction": data,
+                        "status": "fail",
+                        "message": e
+                    };
+        
+                    res.send(structure);
+                });
+            }
 
-        eos.transfer(data)
-        .then((txid)=>{
-            console.log(txid);
-            res.send(txid);
+            else if(resp.message==="GOT"){
+                console.log(`Order: ${resp.order_id} EXISTS.`);
+                res.send(`${resp}`);
+            }
         })
         .catch((e)=>{
-            console.log(e);
-            res.send(e);
+            console.log("Error in db Check", e);
+            res.send(`db Check eRROR: ${e}`);
         });
     }
     catch(e){
-      res.send(e);
+        console.log("Caught outside o)))", e);
+        res.send(e);
     }
   });
 //-<.GET_INFO.>=======================================================~|

@@ -3,6 +3,7 @@
 eosfx uses eosjs to perform token transfers and can be extended to support buyram, stake, unstake, create new account and other actions on the eosio account. 
 
 ## f(x):
+
 **async function transfer(data)**
 
 ## input format:
