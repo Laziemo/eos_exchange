@@ -6,14 +6,13 @@ HYFERx Project
 //-<..>===============================================================~|
 'use strict';
 //-<.modules.>========================================================~|
-const request = require ("request");
 const express = require ("express");
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const CronDog = require('cron').CronJob;
 const fs = require('fs');
-const req_options = require('./lib/options');
-const node_request = require('./lib/node_request');
+
+const request = require('./lib/node_request');
 const looper = require('./lib/async_loop');
 
 let app = express();
@@ -35,16 +34,16 @@ const job = new CronDog('*/5 * * * * *', ()=>{
     //get actions for stestnettbit
     try{
         const params = {"account_name":"stestnettbit"};
-        req_options.build('http://127.0.0.1:8877/get_actions',params)
+        request.build_options('http://127.0.0.1:8877/get_actions',params)
         .then((options)=>{
-            node_request.req(options,"/interface/get_actions")
+            request.send(options,"/interface/get_actions")
             .then((resp)=>{
-                
+                let rec_array = resp.message;
                 let our_trxset = new Array();//contains the list of relavant trxs to update. filtered from request to interface get_actions
                 let our_blocks = new Array();//contains a list of blocks that have our transaction
                 //console.log(JSON.stringify(resp,null,2));
                 //try a filter() alternative to this looper...
-                looper.go(resp,(elem,report)=>{//elem is the iterator over resp, report is the reference counting function, call it at the end of the loop
+                looper.go(rec_array,(elem,report)=>{//elem is the iterator over resp, report is the reference counting function, call it at the end of the loop
                    
                     if(elem.data.to==="stestnettbit" && tip_block<elem.block_num){ //if the selceted action (elem) has a block_num less that tip_block
                         our_trxset.push(elem); //add the action to the trx_set of receives 
@@ -58,7 +57,8 @@ const job = new CronDog('*/5 * * * * *', ()=>{
                     our_blocks.sort(); //ensure that the last element of the array is the latest block
                     if (tip_block<our_blocks[our_blocks.length -1]){ // if current tip_block is less than the latest block
                         //new transactions have taken place since tip_block i.e. our_trxset has elements
-                        update_db(our_trxset).then((resp)=>{ //update mongodb client with new receives
+                        update_db(our_trxset)
+                        .then((resp)=>{ //update mongodb client with new receives
                             //if db update is successful then update tip_block
                             tip_block = our_blocks[our_blocks.length -1];  
                             fs.writeFile('tip_backup.bloc', tip_block, (err) => {
@@ -96,9 +96,9 @@ job.start();
 let update_db=(data)=>{
     return new Promise((resolve,reject)=>{
         try{
-            req_options.build('http://127.0.0.1:8866/update',data)
+            request.build_options('http://127.0.0.1:8866/update',data)
             .then((options)=>{
-                node_request.req(options,"/update/receivesDB")
+                request.send(options,"/update/receivesDB")
                 .then((resp)=>{
                     //console.log(resp);
                     if(resp==="GOT"){
@@ -115,7 +115,7 @@ let update_db=(data)=>{
             })
             .catch((e)=>{
                 console.log("Caught Inside o))");
-                reject("Error in building options for call to /update");
+                reject("Error in build_option for call to /update");
             });
         }
         catch(e){

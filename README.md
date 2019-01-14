@@ -23,11 +23,13 @@ curl -X POST "http://127.0.0.1:$NODE/v1/chain/get_account" --data '{"account_nam
 
 To Interface:
 ```
-curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/get_account" --data '{"account_name: "stestnettbit"}'
+curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/get_account" --data '{"account_name": "stestnettbit"}'
 ```
 ```
 curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/send" --data '{"orderId":"TBIT123R098SJ","from":"stestnettbit","to":"ptestnettbit","quantity":"1.0000 EOS","memo":"vizordskizzord"}'
 ```
+
+Refer to interface docs for all curl tests.
 
 ## monitor.js
 
@@ -47,7 +49,7 @@ Listens for requests from monitor.js to update a local mongodb.
 **Environment Variables**
 
 export NODE=*port defined in config.ini::http-server-address*
-
+export APK=*private-key for signing transactions*
 
 { 
 "actions": [ 

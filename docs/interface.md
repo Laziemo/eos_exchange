@@ -9,7 +9,7 @@ interface.js defines endpoints that make specific RPC calls to an EOS node.
 Request Format:
 
 ```
-curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/send" --data '{"order_id":"TBIT123R098SJ",from":"stestnettbit","to":"ptestnettbit","quantity":"1.0000 EOS","memo":"vizordskizzord"}'
+curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1:8877/send" --data '{"order_id":"TBIT123R098SJ","from":"stestnettbit","to":"ptestnettbit","quantity":"1.0000 EOS","memo":"vizordskitzlord"}'
 ```
 
 Checks if order_id exists in db. 
@@ -63,3 +63,15 @@ curl --header  "Content-Type: application/json" --request POST "http://127.0.0.1
 
 export NODE=*port defined in config.ini::http-server-address*
 
+
+## Local Dependencies
+
+```
+const req_options = require('./lib/options');
+const node_request = require('./lib/node_request');
+const eos = require('./lib/eosfx');
+const sends_db = require('./lib/sends_db');
+const res_fmt = require('./lib/response_format'); 
+```
+
+Refer to the individual docs of these dependencies for input and output types
